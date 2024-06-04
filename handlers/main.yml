@@ -1,0 +1,13 @@
+---
+# handlers file for php
+
+
+- name: Restart Nginx
+  service:
+    name: nginx
+    state: restarted
+
+- name: Restart PHP-FPM service
+  service:
+    name: php7.4-fpm  # Adjust the service name based on your PHP version
+    state: restarted

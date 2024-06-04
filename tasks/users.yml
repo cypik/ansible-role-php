@@ -1,0 +1,12 @@
+---
+
+- name: setup group
+  group:
+    name: "{{ php_group }}"
+    system: false
+
+- name: setup user
+  user:
+    name: "{{ php_user }}"
+    system: false
+    group: "{{ php_group }}"

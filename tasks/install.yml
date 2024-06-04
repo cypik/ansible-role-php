@@ -1,0 +1,66 @@
+- name: Install software-properties-common package
+  apt:
+    name: software-properties-common
+    state: present
+  become: yes
+
+- name: Add ondrej/php repository
+  apt_repository:
+    repo: ppa:ondrej/php
+
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: present
+
+- name: Install PHP 7.4 and extensions
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - php7.4-fpm
+    - php7.4-common
+    - php7.4-dom
+    - php7.4-intl
+    - php7.4-mysql
+    - php7.4-xml
+    - php7.4-xmlrpc
+    - php7.4-curl
+    - php7.4-gd
+    - php7.4-imagick
+    - php7.4-cli
+    - php7.4-dev
+    - php7.4-imap
+    - php7.4-mbstring
+    - php7.4-soap
+    - php7.4-zip
+    - php7.4-bcmath
+    - php7.4-igbinary
+    - php7.4-redis
+    - php7.4-json
+
+- name: Configure Nginx
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/default
+  notify: Restart Nginx
+
+- name: Create index.php test file
+  template:
+    src: index.php
+    dest: /var/www/html/index.php
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Change PHP-FPM listen directive
+  lineinfile:
+    path: /etc/php/7.4/fpm/pool.d/www.conf
+    regexp: '^listen ='
+    line: 'listen = 9000'
+
+
+- name: Restart PHP-FPM service
+  service:
+    name: php7.4-fpm  # Adjust the service name based on your PHP version
+    state: restarted
